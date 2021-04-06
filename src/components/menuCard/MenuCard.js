@@ -23,7 +23,7 @@ const MenuCard = ({id, name, description, handleDuplicate, handleDelete }) =>
 
   function onOpenMenu()
   {
-    history.push(`/menus/:${id}`);
+    history.push(`/menus/${id}`);
   }
 };
 

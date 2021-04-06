@@ -8,6 +8,7 @@ import Login from './pages/login/Login';
 import Dashboard from './pages/dashboard/Dashboard';
 import PrivateRoute from "./components/PrivateRoute";
 import LoginRoute from "./LoginRoute";
+import SingleMenu from "./pages/dashboard/SingleMenu";
 
 const App = () =>
 {
@@ -33,7 +34,8 @@ const App = () =>
             <Switch>
               <Route exact path="/" component={Login} />
               <Route exact path="/login" component={Login} />
-              <PrivateRoute path='/menus' component={Dashboard} isLoggedIn={isLoggedIn} />
+              <PrivateRoute exact path='/menus' component={Dashboard} isLoggedIn={isLoggedIn} />
+              <PrivateRoute path='/menus/:menuId' component={SingleMenu} isLoggedIn={isLoggedIn} />
             </Switch>
         </Router>
       </Suspense>

@@ -5,7 +5,6 @@ const collectionName = "menu";
 
 export async function getMenus()
 {
-  console.log(getCollection('categories').then(res => console.log(res)))
   return await getCollection(collectionName);
 }
 

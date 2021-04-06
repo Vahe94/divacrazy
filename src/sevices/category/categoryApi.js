@@ -1,11 +1,11 @@
 import {db} from "../../initilizeFb";
 import {getCollection} from "../api";
 
-const collectionName = "category";
+const collectionName = "categories";
 
-export async function getCategories()
+export async function getCategories(menuId)
 {
-  return await getCollection(collectionName);
+  return await getCollection(collectionName, menuId);
 }
 
 export async function getCategory(id)
