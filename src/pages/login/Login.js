@@ -1,6 +1,6 @@
 import firebase from "firebase";
 import {ui} from '../../index.js';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -38,9 +38,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn() {
+export default function SignIn({history}) {
   const classes = useStyles();
   const { register, errors, handleSubmit } = useForm();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  useEffect(() => {
+    console.log('sdfsdfsdfsd')
+
+    firebase.auth().onAuthStateChanged((user) =>
+    {
+      setIsLoaded(true);
+      if (user) {
+        console.log(user, 'useruseruseruser');
+        setIsLoggedIn(true);
+        history.push('/menus');
+      } else {
+        setIsLoggedIn(false);
+      }
+    });
+  }, []);
+
   const onSubmit = (data, e) => {
     login(data.email, data.password).then((user) => {console.log(user, 'user')} );
   };

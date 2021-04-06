@@ -1,22 +1,23 @@
-import React, {Suspense} from 'react';
+import React, {useEffect} from 'react';
 import Container from '@material-ui/core/Container';
 import {getMenus} from "../../sevices/menu/menuApi";
 import MenuCard from "../../components/menuCard/MenuCard";
-import {cloneDeep} from "lodash-es";
 import Spinner from "../../components/Spinner";
 import {Redirect, Route, Switch} from "react-router-dom";
+import Menu from "../menu/Menu";
 
-export default function Dashboard()
+const  Dashboard = () =>
 {
   const [menus, setMenus] = React.useState([]);
 
-  React.useEffect(( ) => {
+  useEffect(( ) => {
      getMenus().then(data => {
+       console.log(data, 'data atsdatsdvagsd')
        setMenus(m => data);
      })
   }, [])
 
-  console.log(menus)
+  console.log(menus, 'menus')
   return (
     <Container component="main" maxWidth="xs">
       {
@@ -24,12 +25,6 @@ export default function Dashboard()
           return <MenuCard key={menu.id} {...menu} handleDuplicate={handleDuplicate} handleDelete={handleDelete}/>
         })
       }
-      <Suspense fallback={<Spinner />}>
-        <Switch>
-          <Route path={'/menu:id'} component={Menu} />
-          <Redirect to={'/menus'} />
-        </Switch>
-      </Suspense>
     </Container>
   );
 
@@ -51,4 +46,6 @@ export default function Dashboard()
   //     setMenus(m => clonedMenus);
   //   }
   // }
-}
+};
+
+export default Dashboard;

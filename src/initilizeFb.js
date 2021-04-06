@@ -5,9 +5,9 @@ require("firebase/firestore");
 // Your web app's Firebase configuration
 var firebaseConfig = {
   apiKey: "AIzaSyALQo-cVJl8CTZOQ0KbVY-I3JCoLXIP5RY",
-  authDomain: "diva-crazy-menuCard.firebaseapp.com",
-  projectId: "diva-crazy-menuCard",
-  storageBucket: "diva-crazy-menuCard.appspot.com",
+  authDomain: "diva-crazy-menu.firebaseapp.com",
+  projectId: "diva-crazy-menu",
+  storageBucket: "diva-crazy-menu.appspot.com",
   messagingSenderId: "479334478977",
   appId: "1:479334478977:web:95df08badc203882678980"
 };
