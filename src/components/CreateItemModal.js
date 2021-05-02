@@ -8,6 +8,8 @@ import {useForm} from "react-hook-form";
 import {createCategory, updateCategory} from "../sevices/category/categoryApi";
 import {DropzoneArea} from 'material-ui-dropzone';
 import {storageRef} from "../initilizeFb";
+import {createItem, updateItem} from "../sevices/item/itemApi";
+import {Checkbox, FormControlLabel} from "@material-ui/core";
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
@@ -42,12 +44,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CreateCategoryModal({isOpen, setIsOpen, categories, setCategories, menuId, categoryId, editCategory, setEditCategory}) {
+export default function CreateItemModal({isOpen, setIsOpen, items, setItems, menuId, categoryId, editItem, setEditItem}) {
   const classes = useStyles();
   const { register, errors, handleSubmit } = useForm();
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState(null);
+  const [published, setPublished] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
 
   useEffect(() => {
@@ -57,7 +60,8 @@ export default function CreateCategoryModal({isOpen, setIsOpen, categories, setC
   }, [isOpen])
 
   const handleClose = () => {
-    setEditCategory(null);
+    setEditItem(null);
+    setPublished(false);
     setOpen(false);
     setIsOpen(false);
   };
@@ -65,7 +69,8 @@ export default function CreateCategoryModal({isOpen, setIsOpen, categories, setC
   const onSubmit = (data, e) => {
     data.menuId = menuId;
     data.parent = categoryId || null;
-    if (!editCategory) {
+    data.published = published;
+    if (!editItem) {
       if (image) {
         const uploadTask = storageRef.ref('DivaCrazy/').child(image.name).put(image);
         uploadTask.on('state_changed',
@@ -80,21 +85,21 @@ export default function CreateCategoryModal({isOpen, setIsOpen, categories, setC
             uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
               console.log('File available at', downloadURL);
               data.image = downloadURL;
-              createCategory(data).then((res) => {
-                setCategories([...categories, res]);
-                setImage(null);
+              createItem(data).then((res) => {
+                setItems([...items, res]);
                 setOpen(false);
                 setIsOpen(false);
+                setPublished(false);
               });
             });
           }
         );
       } else {
-        createCategory(data).then((res) => {
-          setCategories([...categories, res]);
-          setImage(null);
+        createItem(data).then((res) => {
+          setItems([...items, res]);
           setOpen(false);
           setIsOpen(false);
+          setPublished(false);
         });
       }
     } else {
@@ -112,16 +117,17 @@ export default function CreateCategoryModal({isOpen, setIsOpen, categories, setC
             uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
               console.log('File available at', downloadURL);
               data.image = downloadURL;
-              updateCategory(data, editCategory.id).then((res) => {
-                let tempCategories = [...categories];
-                data.id = editCategory.id;
-                tempCategories = tempCategories.map((cat) => {
-                  return cat.id === editCategory.id ? data : cat;
+              updateItem(data, editItem.id ).then((res) => {
+                let tempItems = [...items];
+                data.id = editItem.id;
+                tempItems = tempItems.map((item) => {
+                  return item.id === editItem.id ? data : item;
                 })
-                setCategories([...tempCategories]);
+                setItems([...tempItems]);
                 setOpen(false);
                 setIsOpen(false);
-                setEditCategory(null);
+                setEditItem(null);
+                setPublished(false);
               });
             });
           }
@@ -130,20 +136,20 @@ export default function CreateCategoryModal({isOpen, setIsOpen, categories, setC
         if (imageUrl) {
           data.image = imageUrl;
         }
-        updateCategory(data, editCategory.id).then((res) => {
-          let tempCategories = [...categories];
-          data.id = editCategory.id;
-          tempCategories = tempCategories.map((cat) => {
-            return cat.id === editCategory.id ? data : cat;
+        updateItem(data, editItem.id ).then((res) => {
+          let tempItems = [...items];
+          data.id = editItem.id;
+          tempItems = tempItems.map((item) => {
+            return item.id === editItem.id ? data : item;
           })
-          setCategories([...tempCategories]);
+          setItems([...tempItems]);
           setOpen(false);
           setIsOpen(false);
-          setEditCategory(null);
+          setEditItem(null);
+          setPublished(false);
         });
       }
     }
-
 
   };
 
@@ -155,18 +161,24 @@ export default function CreateCategoryModal({isOpen, setIsOpen, categories, setC
     }
   }
 
+  const handlePublished = (event) => {
+    setPublished(event.target.checked);
+  }
+
+
   useEffect(() => {
-    if (editCategory?.id) {
-      setImageUrl(editCategory.image);
+    if (editItem?.id) {
+      setImageUrl(editItem.image);
+      setPublished(editItem.published || false);
     }
-  }, [editCategory])
+  }, [editItem])
 
   const body = (
     <div style={modalStyle} className={classes.paper}>
-      <h2 id="simple-modal-title">{editCategory?.id ? "Edit Category" : "Create Category" }</h2>
+      <h2 id="simple-modal-title">{editItem?.id ? "Edit Item" : "Create Item" }</h2>
       <form className={classes.form} noValidate onSubmit={handleSubmit(onSubmit, onError)}>
         <TextField
-          defaultValue={editCategory?.id ? editCategory.name : ''}
+          defaultValue={editItem?.id ? editItem.name : "" }
           variant="outlined"
           margin="normal"
           required
@@ -179,7 +191,7 @@ export default function CreateCategoryModal({isOpen, setIsOpen, categories, setC
         />
         <ErrorMessage errors={errors} name="name" />
         <TextField
-          defaultValue={editCategory?.id ? editCategory.description : ''}
+          defaultValue={editItem?.id ? editItem.description : "" }
           variant="outlined"
           margin="normal"
           required
@@ -190,19 +202,31 @@ export default function CreateCategoryModal({isOpen, setIsOpen, categories, setC
           inputRef={register({ required: "description is required" })}
         />
         <ErrorMessage errors={errors} name="description" />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={published}
+              onChange={handlePublished}
+              name="published"
+              id="published"
+              color="primary"
+            />
+          }
+          label="Published"
+        />
         <DropzoneArea
           filesLimit={1}
           onChange={handleChange}
         />
         <Button
-          name="category"
+          name="item"
           type="submit"
           fullWidth
           variant="contained"
           color="primary"
           className={classes.submit}
         >
-          {editCategory?.id ? "Edit" : "Create" }
+          {editItem?.id ? "Edit" : "Create" }
         </Button>
       </form>
     </div>

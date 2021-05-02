@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import { useHistory } from "react-router-dom";
-import "./menuCard.css";
+import "./categoryCard.css";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -9,7 +9,9 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Button from "@material-ui/core/Button";
 import DeleteConfirm from "../DeleteConfirm";
-import {deleteMenu} from "../../sevices/menu/menuApi";
+import {deleteCategory} from "../../sevices/category/categoryApi";
+import {Image} from "@material-ui/icons";
+import {CardActions, CardHeader, CardMedia} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,11 +35,17 @@ const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
   },
+  media: {
+    height: 0,
+    paddingTop: '56.25%', // 16:9
+  },
 }));
 
-const MenuCard = ({id, name, description, menus, setMenus}) => {
+
+const CategoryCard = ({category, categories, setCategories, menuId, setIsOpenCategoryModal, setEditCategory}) => {
   const classes = useStyles();
   const history = useHistory();
+  const { id, name, description, published, image } = category;
   const [openDeleteConfirm, setOpenDeleteConfirm] = React.useState(false);
   const [confirm, setConfirm] = React.useState(false);
 
@@ -46,18 +54,24 @@ const MenuCard = ({id, name, description, menus, setMenus}) => {
     setOpenDeleteConfirm(true);
   };
 
+  const handleClickEdit = (event) => {
+    event.stopPropagation();
+    setIsOpenCategoryModal(true);
+    setEditCategory(category);
+  };
+
   const onOpenMenu = (event) => {
-    history.push(`/menus/${id}`);
+    history.push(`/categories/${id}?menuId=${menuId}`);
   }
 
   useEffect(() => {
     if (confirm) {
-      deleteMenu(id).then(() => {
-        let tempMenus = [...menus];
-        tempMenus = tempMenus.filter(menu => {
-          return id !== menu.id;
+      deleteCategory(id).then(() => {
+        let tempCategories = [...categories];
+        tempCategories = tempCategories.filter(category => {
+          return id !== category.id;
         })
-        setMenus(tempMenus)
+        setCategories(tempCategories)
         setOpenDeleteConfirm(false);
       })
     }
@@ -65,15 +79,22 @@ const MenuCard = ({id, name, description, menus, setMenus}) => {
 
   return (
     <Card className={classes.root}  onClick={onOpenMenu}>
+      <CardHeader
+        title={name}
+      />
+      <CardMedia
+        className={classes.media}
+        image={image}
+      />
       <CardContent>
-        <Typography className={classes.name} color="textSecondary" gutterBottom>
-          {name}
-        </Typography>
         <Typography className={classes.description} variant="body2" component="p">
           {description}
         </Typography>
+      </CardContent>
+      <CardActions disableSpacing>
         <div>
           <Button
+            onClick={handleClickEdit}
             variant="contained"
             color="default"
             className={classes.button}
@@ -91,10 +112,10 @@ const MenuCard = ({id, name, description, menus, setMenus}) => {
             Delete
           </Button>
         </div>
-      </CardContent>
+      </CardActions>
       <DeleteConfirm setIsOpen={setOpenDeleteConfirm} isOpen={openDeleteConfirm} setConfirm={setConfirm}/>
     </Card>
   );
 };
 
-export default MenuCard;
+export default CategoryCard;

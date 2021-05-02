@@ -27,7 +27,6 @@ const App = () =>
     });
   }, []);
 
-  console.log(isLoggedIn, 'isLoggedInisLoggedInisLoggedInisLoggedIn')
     return (
       <Suspense fallback={<Spinner />}>
         <Router>
@@ -36,6 +35,7 @@ const App = () =>
               <Route exact path="/login" component={Login} />
               <PrivateRoute exact path='/menus' component={Dashboard} isLoggedIn={isLoggedIn} />
               <PrivateRoute path='/menus/:menuId' component={SingleMenu} isLoggedIn={isLoggedIn} />
+              <PrivateRoute path='/categories/:categoryId' component={SingleMenu} isLoggedIn={isLoggedIn} />
             </Switch>
         </Router>
       </Suspense>

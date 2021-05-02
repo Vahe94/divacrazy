@@ -1,15 +1,13 @@
 import {db} from "../../initilizeFb";
 import {getCollection} from "../api";
 
-const collectionName = "categories";
+const collectionName = "items";
 
-export async function getCategories(menuId, isMenu)
-{
-  return await getCollection(collectionName, menuId, isMenu);
+export async function getItems(itemId, isMenu) {
+  return await getCollection(collectionName, itemId, isMenu);
 }
 
-export async function getCategory(id)
-{
+export async function getItem(id) {
   return await db.collection(collectionName).doc(id)
     .get()
     .then(doc => {
@@ -19,22 +17,22 @@ export async function getCategory(id)
     });
 }
 
-export async function createCategory(data)
+export async function createItem(data)
 {
   return await db.collection(collectionName)
     .add(data)
     .then(docRef => ({...data, id: docRef.id}));
 }
 
-export async function updateCategory(data, id)
+export async function updateItem(data, id)
 {
   return await db.collection(collectionName).doc(id)
     .update(data)
 }
 
-export async function deleteCategory(id)
+export async function deleteItem(id)
 {
   return await db.collection(collectionName).doc(id)
     .delete()
-    .then(() => console.log("category deleted" , id));
+    .then(() => console.log("item deleted" , id));
 }

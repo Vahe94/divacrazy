@@ -1,9 +1,9 @@
 import firebase from "firebase";
-// Required for side-effects
-require("firebase/firestore");
+import "firebase/storage";
+import "firebase/firestore";
 
 // Your web app's Firebase configuration
-var firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyALQo-cVJl8CTZOQ0KbVY-I3JCoLXIP5RY",
   authDomain: "diva-crazy-menu.firebaseapp.com",
   projectId: "diva-crazy-menu",
@@ -14,5 +14,6 @@ var firebaseConfig = {
 // Initialize Firebase
 const fb = firebase.initializeApp(firebaseConfig);
 const db = fb.firestore();
+export const storageRef = firebase.storage();
 
 export {db};

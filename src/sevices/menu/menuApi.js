@@ -1,15 +1,13 @@
-import {db} from "../../initilizeFb";
-import {getCollection} from "../api";
+import { db } from "../../initilizeFb";
+import { getCollection } from "../api";
 
-const collectionName = "menu";
+const collectionName = "menus";
 
-export async function getMenus()
-{
+export async function getMenus() {
   return await getCollection(collectionName);
 }
 
-export async function getMenu(id)
-{
+export async function getMenu(id) {
   return await db.collection(collectionName).doc(id)
     .get()
     .then(doc => {
@@ -19,23 +17,20 @@ export async function getMenu(id)
     });
 }
 
-export async function createMenu(data)
-{
+export async function createMenu(data) {
   return await db.collection(collectionName)
     .add(data)
     .then(docRef => ({...data, id: docRef.id}));
 }
 
-export async function updateMenu(data, id)
-{
+export async function updateMenu(data, id) {
   return await db.collection(collectionName).doc(id)
     .update(data)
     .then(docRef => ({...data, id: docRef.id}));
 }
 
-export async function deleteMenu(id)
-{
+export async function deleteMenu(id) {
   return await db.collection(collectionName).doc(id)
     .delete()
-    .then(() => console.log("menu deleted" , id));
+    .then((res) => res);
 }

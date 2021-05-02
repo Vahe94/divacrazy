@@ -2,13 +2,33 @@ import React, {useEffect} from 'react';
 import Container from '@material-ui/core/Container';
 import {getMenus} from "../../sevices/menu/menuApi";
 import MenuCard from "../../components/menuCard/MenuCard";
-import Spinner from "../../components/Spinner";
-import {Redirect, Route, Switch} from "react-router-dom";
-import Menu from "../menu/Menu";
+import Button from "@material-ui/core/Button";
+import CreateMenuModal from "../../components/CreateMenuModal";
+import { makeStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+  container: {
+    padding: '30px 20px',
+  },
+  createButton: {
+    marginTop: '15px'
+  }
+}));
 
 const  Dashboard = () =>
 {
   const [menus, setMenus] = React.useState([]);
+  const [isOpenMenuModal, setIsOpenMenuModal] = React.useState(false);
+  const classes = useStyles();
 
   useEffect(( ) => {
      getMenus().then(data => {
@@ -17,35 +37,40 @@ const  Dashboard = () =>
      })
   }, [])
 
-  console.log(menus, 'menus')
+  const onCreateMenuClick = () => {
+    setIsOpenMenuModal(true);
+  }
+
   return (
-    <Container component="main" maxWidth="xs">
-      {
-        menus.map((menu,i) => {
-          return <MenuCard key={menu.id} {...menu} handleDuplicate={handleDuplicate} handleDelete={handleDelete}/>
-        })
-      }
+    <Container className={classes.container} component="main">
+      <div className={classes.root}>
+        <Grid container spacing={3}>
+            {
+              menus.map((menu,i) => {
+                return(
+                  <Grid key={menu.id} item xs={6}>
+                    <MenuCard
+                      key={menu.id}
+                      {...menu}
+                      menus={menus}
+                      setMenus={setMenus}
+                    />
+                  </Grid>
+                  );
+              })
+            }
+        </Grid>
+      </div>
+      <Button
+        className={classes.createButton}
+        variant="contained"
+        color="primary"
+        onClick={onCreateMenuClick}>
+        Create Menu +
+      </Button>
+      <CreateMenuModal isOpen={isOpenMenuModal} setIsOpen={setIsOpenMenuModal} setMenus={setMenus} menus={menus}/>
     </Container>
   );
-
-  function handleDuplicate(id) {
-
-  }
-
-  function handleDelete(id) {
-    // changeMenus
-  }
-
-  // function changeMenu(changedMenu)
-  // {
-  //   const menuIndex = menus.findIndex(menu => menu.id === changedMenu.id);
-  //   if(menuIndex!== -1) {
-  //     const clonedMenus = cloneDeep(menus);
-  //     clonedMenus.splice(menuIndex, 1, changedMenu);
-  //
-  //     setMenus(m => clonedMenus);
-  //   }
-  // }
 };
 
 export default Dashboard;
